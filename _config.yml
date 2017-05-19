@@ -16,8 +16,7 @@
 title: Gregory Katz's personal blog
 email: gregkatz@gmail.com
 description: > # this means to ignore newlines until "baseurl:
-  I write primarily about the Rust programming language and United States
-  employee benefits law.
+  Gregory Katz is an attorney and coder living in New York. He writes primarily about the Rust programming language.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "http://gregkatz.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username: gregkatz
