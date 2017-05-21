@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Building graphical applications to js with Rust and emscripten"
-date:   2017-05-17 7:00:00 -0400
+title:  "Building graphical applications to js in stable Rust"
+date:   2017-05-20 7:00:00 -0400
 categories: Rust emscripten SDL webassembly Asm.js
 ---
 
@@ -9,9 +9,9 @@ categories: Rust emscripten SDL webassembly Asm.js
 
 If you would rather [just try the demo][demo], be warned: ~7mb of js and [BUGS](#bugs).
 
-After recently writing a simple cross-platform [solitaire game][game] inspired by Shenzhen IO, I thought: "What next?" I remembered a post I had read last year by brson titled "[Compiling to the web with Rust and emscripten][users-guide]." This post describes how to apply that guide to get the solitaire game (mostly) running in the browser.
+After recently writing a simple cross-platform [solitaire game][game] inspired by Shenzhen IO, I thought: "What next?" I remembered a post I had read last year by brson titled "[Compiling to the web with Rust and emscripten][users-guide]." This post describes how to apply that guide to get my solitaire game (mostly) running in the browser.
 
-(My apologies to Windows users, but this post focuses on Linux and Mac.)
+(Apologies to Windows users, but this post focuses on Linux and Mac.)
 
 ## Initial setup
 This post assumes that you have Rust installed through rustup.rs. Brson's guide starts by telling you to switch to nightly, but this is no longer required since Rust 1.14. Enjoy the stable life.
@@ -30,14 +30,14 @@ Go to your miscellaneous projects directory and run:
 {% highlight bash %}
 curl -O https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz
 tar -xzf emsdk-portable.tar.gz
-source emsdk_portable/emsdk_env.sh
+source emsdk-portable/emsdk_env.sh
 emsdk update
 emsdk install sdk-incoming-64bit
 emsdk activate sdk-incoming-64bit
 {% endhighlight %}
 
 (This took nearly an hour for me.)
-You may need to run ```source emsdk_portable/emsdk_env.sh``` one extra time. Check that ```emcc``` is in your path to make sure the SDK is installed.
+You may need to run ```source emsdk-portable/emsdk_env.sh``` one extra time. Check that ```emcc``` is in your path to make sure the SDK is installed.
 
 Again, following brson's guide, do a quick test:
 {% highlight bash %}
@@ -58,6 +58,7 @@ git clone https://www.github.com/gregkatz/cvsolitaire
 Now, make sure you can build natively before you start cross compiling:
 
 {% highlight bash %}
+cd cvsolitaire
 cargo build
 {% endhighlight %}
 
@@ -112,19 +113,23 @@ Replace ```/your/project/dir/``` with the actual location of your project. This 
 But what have you accomplished? Check out ```./target/asmjs-unknown-emscripten/debug/``` and you should find ```cvsolitaire.js``` waiting for you.
 
 ## Getting it running
-Earlier, we simply ran the js in node and let it print to console. That approach no longer works because the js needs to draw the graphics to a HTML canvas. Fortunately, emscripten can generate the HTML automatically. Edit ```emcc_sdl``` to add a new output flag and also to tell emcc to optimize the build. (Note: this will cause the compiler to output to the current directory.)
+Earlier, you ran the js in node and let it print to console. That approach no longer works because the js needs to draw the graphics to an HTML canvas. Fortunately, emscripten can generate the HTML automatically. Edit ```emcc_sdl``` to add a new output flag and also to tell emcc to optimize the build. (Note: this causes the compiler to output to the current directory.)
 
 Change ```emcc_sdl``` to read:
 {% highlight bash %}
 emcc "-s" "USE_SDL=2" "-o" "cvsolitaire.html" "-02" $@
 {% endhighlight %}
 
-Build again and you will have HTML to go along with the js. But don't open that HTML!
-
+Build again and you have HTML to go along with the js.
+```
+cargo clean
+cargo build --target=asmjs-unknown-emscripten
+```
+But don't open that HTML!
 ## Finishing touches
-Opening the HTML causes the browser to lock up until the unresponsive script dialog can interrupt. The problem, as [described here][em-sdl], is that SDL's event loop monopolizes the browser's engine, and prevents it from doing anything else. To solve the problem, allow emscripten to throttle the event loop so the browser can do other things.
+Opening the HTML causes the browser to lock up until the unresponsive script dialog can interrupt. The problem, as [described here][em-sdl], is that SDL's event loop monopolizes the browser's engine, and prevents it from doing anything else. To fix the issue, allow emscripten to throttle the event loop so the browser can do other things.
 
-First, edit ```main.rs``` to remove the very last line that reads:
+First, edit ```src/main.rs``` to remove the very last line that reads:
 {% highlight rust %}
 window.exec();
 {% endhighlight %}
@@ -137,7 +142,7 @@ set_main_loop_callback(||{
 });
 {% endhighlight %}
 
-Finally, borrow some [code][triangle-repo] developed by [badboy_][jan-home] for his talk "[Compiling Rust to your Browser][talk]" which wraps the closure in a function, and passes the function as a callback to emscripten. Put the following after the main function:
+Next, borrow some [code][triangle-repo] developed by [badboy_][jan-home] for his talk "[Compiling Rust to your Browser][talk]" which wraps the closure in a function, and passes the function as a callback to emscripten. Put the following after the main function:
 
 {% highlight rust %}
 use std::os::raw::{c_void, c_int};
@@ -169,17 +174,19 @@ unsafe extern "C" fn wrapper<F>() where F : FnMut() {
 }
 {% endhighlight %}
 
-Change the linker script one more time:
+Finally, change the linker script one more time:
 {% highlight bash %}
 emcc "-s" "USE_SDL=2" "-o" "cvsolitaire.html" "-02" "-s" "NO_EXIT_RUNTIME=1" $@
 {% endhighlight %}
 
-Now rebuild, and open the HTML generated in your current directory. Use Firefox because Chrome does not allow local js. Alternatively, fire up a simple web server to host the page.
+Now rebuild in release mode, ```cargo build --target=asmjs-unknown-emscripten --release``` and open the HTML generated in your current directory. Use Firefox because Chrome does not allow local js. Alternatively, fire up a simple web server to host the page.
 
 ## Bugs
 You may have noticed that the colors are off. The green is intentional. The game only uses three suits, and I wanted a better color balance. The blue, however, is a bug. The reds get messed up somewhere along the journey.
 
-Also, not all clicks register, so if you really want to play in your browser, you will have to click a few times to get your moves to register. The game is not receiving all mouse events. Any ideas appreciated!
+Also, not all clicks register, so if you really want to play in your browser, you have to click a few times to get your moves to register. The game is not receiving all mouse events. Any ideas appreciated!
+
+Questions? Comments? I'm gregkatz on github or gregwtmtno on reddit.
 
 [users-guide]: https://users.rust-lang.org/t/compiling-to-the-web-with-rust-and-emscripten/7627
 [game]: https://www.github.com/gregkatz/cvsolitaire
