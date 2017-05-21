@@ -7,7 +7,7 @@ categories: Rust emscripten SDL webassembly Asm.js
 
 ![CVSolitaire running in firefox]({{ site.url }}/assets/CVSolitaire_wasm.png)
 
-If you would rather [just try the demo][demo], be warned: ~7mb of js and [BUGS](#bugs).
+If you would rather [just try the demo][demo] or check out the [repo][repo], be warned: ~7mb of js and [BUGS](#bugs).
 
 After recently writing a simple cross-platform [solitaire game][game] inspired by Shenzhen IO, I thought: "What next?" I remembered a post I had read last year by brson titled "[Compiling to the web with Rust and emscripten][users-guide]." This post describes how to apply that guide to get my solitaire game (mostly) running in the browser.
 
@@ -198,3 +198,4 @@ Questions? Comments? I'm gregkatz on github or gregwtmtno on reddit.
 [triangle-repo]: https://github.com/badboy/rust-triangle-js/blob/master/src/main.rs
 [talk]: http://www.hellorust.com/emscripten/
 [demo]: {{ site.url }}/assets/game/cvsolitaire.html
+[repo]: https://github.com/gregkatz/cvsolitaire/tree/emscripten
