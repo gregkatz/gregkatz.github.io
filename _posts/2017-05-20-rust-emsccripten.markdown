@@ -3,14 +3,15 @@ layout: default
 title:  "Building graphical applications to js in stable Rust"
 date:   2017-05-20 7:00:00 -0400
 categories: Rust emscripten SDL webassembly Asm.js
+permalink: /2017-05-20-rust-emscripten.html
 ---
-## Building graphical applications to js in stable Rust
+## Building graphical applications to JS in stable Rust
 
 ![CVSolitaire running in firefox]({{ site.url }}/assets/CVSolitaire_wasm.png)
 
 May 20, 2017
 
-If you would rather [just try the demo][demo] or check out the [repo][repo], be warned: ~7mb of js and [BUGS](#bugs).
+If you would rather [just try the demo][demo] or check out the [repo][repo], be warned: ~7mb of JS and [BUGS](#bugs).
 
 After recently writing a simple cross-platform [solitaire game][game] inspired by Shenzhen IO, I thought: "What next?" I remembered a post I had read last year by brson titled "[Compiling to the web with Rust and emscripten][users-guide]." This post describes how to apply that guide to get my solitaire game (mostly) running in the browser.
 
@@ -116,14 +117,14 @@ Replace ```/your/project/dir/``` with the actual location of your project. This 
 But what have you accomplished? Check out ```./target/asmjs-unknown-emscripten/debug/``` and you should find ```cvsolitaire.js``` waiting for you.
 
 ## Getting it running
-Earlier, you ran the js in node and let it print to console. That approach no longer works because the js needs to draw the graphics to an HTML canvas. Fortunately, emscripten can generate the HTML automatically. Edit ```emcc_sdl``` to add a new output flag and also to tell emcc to optimize the build. (Note: this causes the compiler to output to the current directory.)
+Earlier, you ran the JS in node and let it print to console. That approach no longer works because the JS needs to draw the graphics to an HTML canvas. Fortunately, emscripten can generate the HTML automatically. Edit ```emcc_sdl``` to add a new output flag and also to tell emcc to optimize the build. (Note: this causes the compiler to output to the current directory.)
 
 Change ```emcc_sdl``` to read:
 {% highlight bash %}
 emcc "-s" "USE_SDL=2" "-o" "cvsolitaire.html" "-02" $@
 {% endhighlight %}
 
-Build again and you have HTML to go along with the js.
+Build again and you have HTML to go along with the JS.
 {% highlight bash %}
 cargo clean
 cargo build --target=asmjs-unknown-emscripten
@@ -183,7 +184,7 @@ Finally, change the linker script one more time:
 emcc "-s" "USE_SDL=2" "-o" "cvsolitaire.html" "-02" "-s" "NO_EXIT_RUNTIME=1" $@
 {% endhighlight %}
 
-Now rebuild in release mode, ```cargo build --target=asmjs-unknown-emscripten --release``` and open the HTML generated in your current directory. Use Firefox because Chrome does not allow local js. Alternatively, fire up a simple web server to host the page.
+Now rebuild in release mode, ```cargo build --target=asmjs-unknown-emscripten --release``` and open the HTML generated in your current directory. Use Firefox because Chrome does not allow local JS. Alternatively, fire up a simple web server to host the page.
 
 ## Bugs
 You may have noticed that the colors are off. The green is intentional. The game only uses three suits, and I wanted a better color balance. The blue, however, is a bug. The reds get messed up somewhere along the journey.
