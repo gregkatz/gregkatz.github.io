@@ -5,7 +5,7 @@ date:   2017-05-20 7:00:00 -0400
 categories: Rust emscripten SDL webassembly Asm.js
 permalink: /2017-05-20-rust-emscripten.html
 ---
-## Building graphical applications to JS in stable Rust
+# Building graphical applications to JS in stable Rust
 
 ![CVSolitaire running in firefox]({{ site.url }}/assets/CVSolitaire_wasm.png)
 
