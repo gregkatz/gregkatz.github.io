@@ -1,7 +1,7 @@
 ---
-layout: default
-title:  "Building graphical applications to js in stable Rust"
-date:   2017-05-20 7:00:00 -0400
+layout: post
+title: Building graphical applications to js in stable Rust
+date: 2017-05-20 7:00:00 -0400
 categories: Rust emscripten SDL webassembly Asm.js
 permalink: /2017-05-20-rust-emscripten.html
 ---
