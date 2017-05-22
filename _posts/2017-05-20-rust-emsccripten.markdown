@@ -1,9 +1,10 @@
 ---
-layout: post
+layout: default
 title:  "Building graphical applications to js in stable Rust"
 date:   2017-05-20 7:00:00 -0400
 categories: Rust emscripten SDL webassembly Asm.js
 ---
+## Building graphical applications to js in stable Rust
 
 ![CVSolitaire running in firefox]({{ site.url }}/assets/CVSolitaire_wasm.png)
 
@@ -121,10 +122,11 @@ emcc "-s" "USE_SDL=2" "-o" "cvsolitaire.html" "-02" $@
 {% endhighlight %}
 
 Build again and you have HTML to go along with the js.
-```
+{% highlight bash %}
 cargo clean
 cargo build --target=asmjs-unknown-emscripten
-```
+{% endhighlight %}
+
 But don't open that HTML!
 ## Finishing touches
 Opening the HTML causes the browser to lock up until the unresponsive script dialog can interrupt. The problem, as [described here][em-sdl], is that SDL's event loop monopolizes the browser's engine, and prevents it from doing anything else. To fix the issue, allow emscripten to throttle the event loop so the browser can do other things.
