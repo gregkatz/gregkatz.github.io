@@ -52,7 +52,7 @@ node hello.js
 If that works, continue on.
 
 ## Building something bigger
-First, clone the solitaire game. I wrote game to have minimal dependencies for [Redox][redox] compatibility, which also makes it a good fit for emscripten. It also embeds its sprite assets in the binary which allows you to avoid simulating a filesystem with emscripten.
+First, clone the solitaire game. I wrote the game to have minimal dependencies for [Redox][redox] compatibility, which also makes it a good fit for emscripten. It also embeds its sprite assets in the binary which allows you to avoid simulating a filesystem with emscripten.
 Go to your projects folder and run:
 {% highlight bash %}
 git clone https://www.github.com/gregkatz/cvsolitaire
